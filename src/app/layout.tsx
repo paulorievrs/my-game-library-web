@@ -21,7 +21,12 @@ export default function RootLayout({
   return (
     <ProviderLayout>
       <html lang="en">
-        <body className={clsx(rubik.className, "bg-primary-black relative")}>
+        <body
+          className={clsx(
+            rubik.className,
+            "bg-primary-black relative scroll-smooth"
+          )}
+        >
           <ClientLayout>
             <Toaster
               position="bottom-right"

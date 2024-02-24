@@ -23,7 +23,7 @@ export const Input = React.forwardRef(
         <div className="relative">
           <input
             className={clsx(
-              `py-2 pl-4 w-full border border-[#373737] text-white placeholder:text-primary-gray bg-secondary-black rounded-lg bg-black-5 text-sm placeholder:text-gray-1 transition-all duration-150 focus:outline-none`,
+              `py-2 pl-4 w-full border border-[#373737] text-white placeholder:text-primary-gray bg-secondary-black rounded-lg bg-black-5 text-sm placeholder:text-gray-1 transition-all duration-150 focus:outline-none focus:border-primary`,
               className,
               props.type === "password" ? "pr-10" : "pr-4"
             )}

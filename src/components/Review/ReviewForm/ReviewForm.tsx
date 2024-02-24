@@ -1,16 +1,20 @@
 "use client";
 
+import { Game } from "@/@types/game";
 import Button from "@/components/Button/Button";
-import { Input } from "@/components/Input/Input";
 import { MarkdownEditor } from "@/components/MarkdownEditor/MarkdownEditor";
-import { useForm } from "react-hook-form";
+import Select from "@/components/Select/Select";
+import { Controller, useForm } from "react-hook-form";
 
 type GameReview = {
   review: string;
+  game: Game;
+  beat: boolean;
 };
 
 export default function ReviewForm() {
-  const { handleSubmit, register, getValues, setValue } = useForm<GameReview>();
+  const { handleSubmit, register, getValues, setValue, control } =
+    useForm<GameReview>();
 
   const onSubmit = (data: GameReview) => {
     console.log(data);
@@ -23,7 +27,26 @@ export default function ReviewForm() {
         className="flex flex-col gap-5 mt-10"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <Input label="Title" placeholder="Title" />
+        <Controller
+          control={control}
+          name="game"
+          render={({ field }) => (
+            <Select<Game>
+              placeholder="Select a game"
+              label="Game"
+              searchApi="/game"
+              helperText="Start typing to find a game"
+              itemNotFoundText="Game not found, try a different search!"
+              queryKey="select-games"
+              inputSearchPlaceholder="Search game..."
+              onChange={(game) => {
+                field.onChange(game);
+              }}
+              value={field.value}
+            />
+          )}
+        />
+
         <MarkdownEditor
           rows={30}
           placeholder="Tell what do you felt playing the game"
@@ -33,6 +56,7 @@ export default function ReviewForm() {
           className="resize-none"
           setValue={(value) => setValue("review", value)}
         />
+
         <Button type="submit" label="Submit" />
       </form>
     </div>
