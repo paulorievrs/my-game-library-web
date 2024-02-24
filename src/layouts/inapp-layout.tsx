@@ -87,6 +87,7 @@ export default function InAppLayout({ children }: Props) {
                     onClick={() => {
                       router.push("/");
                       deleteCookie("currentUser");
+                      handleClose();
                     }}
                     leftIcon={<SignOut />}
                   />
