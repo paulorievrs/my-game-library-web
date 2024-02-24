@@ -2,31 +2,29 @@
 
 import Button from "@/components/Button/Button";
 import { Input } from "@/components/Input/Input";
-import { useLogin } from "@/hooks/services/api/useLogin";
-import { LoginType, loginSchema } from "@/services/api/auth.service";
+import { useRegister } from "@/hooks/services/api/useRegister";
+import { RegisterType, registerSchema } from "@/services/api/auth.service";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
 
-export default function Home() {
+export default function Register() {
   const {
     register,
     handleSubmit,
     formState: { errors }
-  } = useForm<LoginType>({
-    resolver: zodResolver(loginSchema),
+  } = useForm<RegisterType>({
+    resolver: zodResolver(registerSchema),
     mode: "all",
     reValidateMode: "onChange"
   });
-  const searchParams = useSearchParams();
+  const router = useRouter();
 
-  const { mutate } = useLogin();
+  const { mutate } = useRegister();
 
-  const onSubmit: SubmitHandler<LoginType> = (data) => {
+  const onSubmit: SubmitHandler<RegisterType> = (data) => {
     mutate(data);
   };
-  const router = useRouter();
 
   return (
     <div className="flex items-center justify-center">
@@ -35,21 +33,23 @@ export default function Home() {
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="flex flex-col gap-2 mb-5">
-          <h1 className="text-3xl font-bold text-white">Login</h1>
-          <span className="text-white">
-            {searchParams.get("redirected") === "true"
-              ? "You need to login to access the page"
-              : ""}
-          </span>
+          <h1 className="text-3xl font-bold text-white">Register</h1>
         </div>
 
         <div className="flex flex-col gap-5">
           <Input
-            placeholder="Username or e-mail"
-            label="Username or e-mail"
-            {...register("usernameOrEmail")}
+            placeholder="E-mail"
+            label="E-mail"
+            {...register("email")}
             autoComplete="off"
-            error={errors.usernameOrEmail?.message}
+            error={errors.email?.message}
+          />
+          <Input
+            placeholder="Username"
+            label="Username"
+            {...register("username")}
+            autoComplete="off"
+            error={errors.username?.message}
           />
           <Input
             placeholder="Password"
@@ -59,16 +59,23 @@ export default function Home() {
             error={errors.password?.message}
             autoComplete="off"
           />
+          <Input
+            placeholder="Biography"
+            label="Biography"
+            {...register("bio")}
+            error={errors.bio?.message}
+            autoComplete="off"
+          />
         </div>
         <div className="flex flex-col gap-2">
-          <Button label="Login" className="w-full" type="submit" />
+          <Button label="Register" className="w-full" type="submit" />
           <Button
-            label="Don't have an account?"
+            label="Already have an account?"
             variant="label"
             className="w-full"
             size="sm"
-            onClick={() => router.push("/register")}
             type="button"
+            onClick={() => router.push("/")}
           />
         </div>
       </form>
