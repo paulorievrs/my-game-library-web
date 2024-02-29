@@ -5,6 +5,7 @@ import { Input } from "@/components/Input/Input";
 import { useLogin } from "@/hooks/services/api/useLogin";
 import { LoginType, loginSchema } from "@/services/api/auth.service";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -62,14 +63,15 @@ export default function Home() {
         </div>
         <div className="flex flex-col gap-2">
           <Button label="Login" className="w-full" type="submit" />
-          <Button
-            label="Don't have an account?"
-            variant="label"
-            className="w-full"
-            size="sm"
-            onClick={() => router.push("/register")}
-            type="button"
-          />
+          <Link href="/register">
+            <Button
+              label="Don't have an account?"
+              variant="label"
+              className="w-full"
+              size="sm"
+              type="button"
+            />
+          </Link>
         </div>
       </form>
     </div>

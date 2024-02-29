@@ -8,7 +8,6 @@ import User from "@/components/icons/User";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/hooks/useUser";
 import { Transition } from "@headlessui/react";
-import { deleteCookie } from "cookies-next";
 import SignOut from "@/components/icons/SignOut";
 import Home from "@/components/icons/Home";
 import Search from "@/components/icons/Search";
@@ -64,6 +63,7 @@ export default function InAppLayout({ children }: Props) {
                     leftIcon={<Home />}
                     onClick={() => {
                       router.push("/home");
+                      handleClose();
                     }}
                   />
                   <Button
@@ -78,6 +78,7 @@ export default function InAppLayout({ children }: Props) {
                     label="My Reviews"
                     onClick={() => {
                       router.push(`/profile/${user?.username}`);
+                      handleClose();
                     }}
                     leftIcon={<User className="scale-90" color="#5858FA" />}
                   />
@@ -85,9 +86,8 @@ export default function InAppLayout({ children }: Props) {
                     variant="menu"
                     label="Logout"
                     onClick={() => {
-                      router.push("/");
-                      deleteCookie("currentUser");
-                      handleClose();
+                      alert("Not implemented");
+                      //deleteCookie("currentUser");
                     }}
                     leftIcon={<SignOut />}
                   />

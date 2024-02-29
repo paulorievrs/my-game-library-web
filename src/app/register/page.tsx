@@ -5,6 +5,7 @@ import { Input } from "@/components/Input/Input";
 import { useRegister } from "@/hooks/services/api/useRegister";
 import { RegisterType, registerSchema } from "@/services/api/auth.service";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
 
@@ -18,7 +19,6 @@ export default function Register() {
     mode: "all",
     reValidateMode: "onChange"
   });
-  const router = useRouter();
 
   const { mutate } = useRegister();
 
@@ -69,14 +69,15 @@ export default function Register() {
         </div>
         <div className="flex flex-col gap-2">
           <Button label="Register" className="w-full" type="submit" />
-          <Button
-            label="Already have an account?"
-            variant="label"
-            className="w-full"
-            size="sm"
-            type="button"
-            onClick={() => router.push("/")}
-          />
+          <Link href="/">
+            <Button
+              label="Already have an account?"
+              variant="label"
+              className="w-full"
+              size="sm"
+              type="button"
+            />
+          </Link>
         </div>
       </form>
     </div>

@@ -3,12 +3,14 @@ import Rating from "../Rating/Rating";
 import { Transition } from "@headlessui/react";
 import clsx from "clsx";
 import { rajdhani } from "@/layouts/fonts";
+import { useRouter } from "next/navigation";
 /* eslint-disable @next/next/no-img-element */
 
 type Props = {
   gameReview: GameReview;
 };
 export default function GameReviewCard({ gameReview }: Props) {
+  const router = useRouter();
   return (
     <Transition
       show={true}
@@ -20,7 +22,9 @@ export default function GameReviewCard({ gameReview }: Props) {
       leaveFrom="opacity-50"
       leaveTo="opacity-0"
     >
-      <div className="bg-secondary-black shadow-md rounded-md transition-all duration-150 cursor-pointer hover:scale-105 hover:shadow-2xl">
+      <div className="bg-secondary-black shadow-md rounded-md transition-all duration-150 cursor-pointer hover:scale-105 hover:shadow-2xl"
+        onClick={() => router.push(`/review/${gameReview.id}`)}
+      >
         <div className="relative">
           <img
             src={gameReview.game.background_image}

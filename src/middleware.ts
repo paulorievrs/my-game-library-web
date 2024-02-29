@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+const publicPages = ["/", "/register"];
+
 export function middleware(request: NextRequest) {
   const currentUser = request.cookies.get("currentUser");
   const { pathname } = request.nextUrl;
@@ -7,13 +9,13 @@ export function middleware(request: NextRequest) {
   const staticFileRegex = /\.(?:png|jpg|jpeg|gif|ico|svg|css|js)$/;
   const isStaticFile =
     pathname.match(staticFileRegex) || pathname.includes("/_next/static/");
-  const isHomePage = pathname === "/";
+  const isInPublicPages = publicPages.includes(pathname);
 
-  if (!currentUser && !isStaticFile && !isHomePage) {
+  if (!currentUser && !isStaticFile && !isInPublicPages) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  if (currentUser && isHomePage) {
+  if (currentUser && isInPublicPages) {
     return NextResponse.redirect(new URL("/home", request.url));
   }
 }

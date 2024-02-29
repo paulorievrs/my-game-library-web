@@ -4,7 +4,7 @@ import InAppLayout from "@/layouts/inapp-layout";
 export default function NewReview() {
   return (
     <InAppLayout>
-      <div className="mt-16">
+      <div className="my-16">
         <ReviewForm />
       </div>
     </InAppLayout>

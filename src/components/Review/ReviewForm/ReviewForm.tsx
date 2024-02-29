@@ -1,24 +1,57 @@
 "use client";
 
 import { Game } from "@/@types/game";
+import { GameReview } from "@/@types/game-review";
 import Button from "@/components/Button/Button";
+import { Input } from "@/components/Input/Input";
 import { MarkdownEditor } from "@/components/MarkdownEditor/MarkdownEditor";
-import Select from "@/components/Select/Select";
+import RatingSelector from "@/components/Rating/RatingSelector";
+import Select, { SelectItemProps } from "@/components/Select/Select";
+import { useCreateGameReview } from "@/hooks/services/api/useCreateGameReview";
+import {
+  GameReviewType,
+  gameReviewSchema
+} from "@/services/api/game-review.service";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 
-type GameReview = {
-  review: string;
-  game: Game;
-  beat: boolean;
+type Props = {
+  gameReview?: GameReview;
 };
 
-export default function ReviewForm() {
-  const { handleSubmit, register, getValues, setValue, control } =
-    useForm<GameReview>();
+export default function ReviewForm({ gameReview }: Props) {
+  const {
+    handleSubmit,
+    register,
+    getValues,
+    setValue,
+    control,
+    watch,
+    formState: { errors }
+  } = useForm<GameReviewType>({
+    mode: "all",
+    reValidateMode: "onChange",
+    resolver: zodResolver(gameReviewSchema),
+    defaultValues: {
+      is_public: gameReview?.is_public ?? true,
+      beat: gameReview?.beat ?? false,
+      gave_up: gameReview?.gave_up ?? false,
+      rating: gameReview?.rating ?? 0,
+      review: gameReview?.review ?? "",
+      game: gameReview?.game as any
+    }
+  });
+  const createGameReview = useCreateGameReview();
 
-  const onSubmit = (data: GameReview) => {
-    console.log(data);
+  const onSubmit = (data: GameReviewType) => {
+    console.log("entrou");
+    if (gameReview?.id) return console.log(data);
+
+    createGameReview.mutate(data);
   };
+
+  const beat = watch("beat");
+  const gaveUp = watch("gave_up");
 
   return (
     <div>
@@ -30,7 +63,7 @@ export default function ReviewForm() {
         <Controller
           control={control}
           name="game"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <Select<Game>
               placeholder="Select a game"
               label="Game"
@@ -42,10 +75,68 @@ export default function ReviewForm() {
               onChange={(game) => {
                 field.onChange(game);
               }}
+              error={error?.message}
               value={field.value}
             />
           )}
         />
+        <Controller
+          control={control}
+          name="rating"
+          render={({ field: { onChange, value } }) => (
+            <div className="pl-1 flex flex-col gap-2 items-start justify-center">
+              <span className="text-primary font-bold text-sm">
+                Rating (1-5 stars)
+              </span>
+              <RatingSelector value={value} setValue={onChange} />
+            </div>
+          )}
+        />
+        <div className="flex flex-row gap-5 w-full">
+          <Input
+            placeholder="Time expended playing"
+            label="Time playing in numbers"
+            autoComplete="off"
+            className="w-full"
+            {...register("played_for_time")}
+            error={errors?.played_for_time?.message}
+          />
+
+          <Controller
+            control={control}
+            name="played_for_long"
+            render={({ field, fieldState: { error } }) => (
+              <Select<SelectItemProps>
+                placeholder="How long did you play?"
+                label="Played for"
+                containerClassName="max-w-sm"
+                onChange={(item) => {
+                  field.onChange(item);
+                }}
+                error={error?.message}
+                value={field.value}
+                defaultData={[
+                  {
+                    id: 5,
+                    name: "minutes"
+                  },
+                  {
+                    id: 1,
+                    name: "hours"
+                  },
+                  {
+                    id: 2,
+                    name: "days"
+                  },
+                  {
+                    id: 3,
+                    name: "months"
+                  }
+                ]}
+              />
+            )}
+          />
+        </div>
 
         <MarkdownEditor
           rows={30}
@@ -55,9 +146,42 @@ export default function ReviewForm() {
           getValue={() => getValues("review")}
           className="resize-none"
           setValue={(value) => setValue("review", value)}
+          error={errors?.review?.message}
         />
+        <div className="flex flex-col md:flex-row gap-5">
+          {!gaveUp && (
+            <div className="flex flex-row gap-2 items-center">
+              <label
+                htmlFor="beat"
+                className="pl-1 text-primary font-bold text-sm"
+              >
+                Beat the game?
+              </label>
+              <input {...register("beat")} type="checkbox" />
+            </div>
+          )}
 
-        <Button type="submit" label="Submit" />
+          {!beat && (
+            <div className="flex flex-row gap-2 items-center">
+              <label className="pl-1 text-primary font-bold text-sm">
+                Gave up the game?
+              </label>
+              <input type="checkbox" {...register("gave_up")} />
+            </div>
+          )}
+          <div className="flex flex-row gap-2 items-center">
+            <label className="pl-1 text-primary font-bold text-sm">
+              This is a public review?
+            </label>
+            <input type="checkbox" {...register("is_public")} />
+          </div>
+        </div>
+
+        <Button
+          type="submit"
+          label="Submit"
+          disabled={createGameReview?.isPending}
+        />
       </form>
     </div>
   );

@@ -4,8 +4,13 @@ import Option, { OptionLoading } from "./Option";
 import { Input } from "../Input/Input";
 import useDebounce from "@/hooks/useDebounce";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { api } from "@/services/api/api";
+
+export type SelectItemProps = {
+  id: number;
+  name: string;
+};
 
 type SelectProps<T> = {
   className?: string;
@@ -20,6 +25,8 @@ type SelectProps<T> = {
   itemNotFoundText?: string;
   queryKey?: string;
   inputSearchPlaceholder?: string;
+  defaultData?: T[];
+  containerClassName?: string;
 };
 
 export default function Select<T>({
@@ -34,13 +41,14 @@ export default function Select<T>({
   itemNotFoundText,
   queryKey,
   inputSearchPlaceholder,
+  defaultData,
+  containerClassName,
   ...props
 }: SelectProps<T>) {
   //TODO: Implement search functionality without re-renders
   const [search, setSearch] = useState("");
   const searchDebounced = useDebounce(search, 2000);
   const [showDropdown, setShowDropdown] = useState(false);
-  const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
     queryFn: () => api.get<T[]>(`${searchApi}?name=${search}` ?? ""),
@@ -78,7 +86,13 @@ export default function Select<T>({
   }, [ref, showDropdown, toogleDropdown]);
 
   return (
-    <div className="flex flex-col gap-2 relative" ref={ref}>
+    <div
+      className={clsx(
+        "flex flex-col gap-2 relative w-full",
+        containerClassName
+      )}
+      ref={ref}
+    >
       {label && (
         <label className="pl-1 text-primary font-bold text-sm">{label}</label>
       )}
@@ -108,10 +122,13 @@ export default function Select<T>({
       {showDropdown && (
         <div className="absolute top-20 p-2 bg-secondary-black border shadow-2xl border-[#727272] z-50 w-full rounded-lg">
           <div className="flex flex-col gap-5 mb-4">
-            <Input
-              placeholder={inputSearchPlaceholder}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+            {searchApi && (
+              <Input
+                placeholder={inputSearchPlaceholder}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            )}
+
             {!search && helperText && (
               <span className="text-white font-bold text-sm text-center self-center">
                 {helperText}
@@ -140,6 +157,18 @@ export default function Select<T>({
               search &&
               data?.data?.length > 0 &&
               data?.data?.map((item: any) => (
+                <Option
+                  key={item.id}
+                  label={item.name}
+                  image={item.background_image}
+                  active={value?.id === item.id}
+                  onClick={() => handleSelect(item)}
+                />
+              ))}
+            {!isLoading &&
+              !data &&
+              defaultData &&
+              defaultData.map((item: any) => (
                 <Option
                   key={item.id}
                   label={item.name}

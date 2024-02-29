@@ -12,6 +12,7 @@ type MarkdownProps = {
   label?: string;
   getValue: () => string;
   setValue: (value: string) => void;
+  error?: string;
 } & React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 
 type MarkdownButton = {
@@ -45,7 +46,7 @@ const markdownButtons: MarkdownButton[] = [
 // eslint-disable-next-line react/display-name
 export const MarkdownEditor = React.forwardRef(
   (
-    { label, className, getValue, setValue, ...props }: MarkdownProps,
+    { label, className, getValue, setValue, error, ...props }: MarkdownProps,
     ref: React.ForwardedRef<HTMLTextAreaElement>
   ) => {
     const [source, setSource] = useState("");
@@ -99,6 +100,11 @@ export const MarkdownEditor = React.forwardRef(
             />
           )}
         </div>
+        {error && (
+          <p className="text-red-500 text-xs font-bold mb-2 pl-1 first-letter:uppercase">
+            {error}
+          </p>
+        )}
       </div>
     );
   }
