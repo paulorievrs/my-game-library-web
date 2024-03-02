@@ -11,6 +11,9 @@ import { Transition } from "@headlessui/react";
 import SignOut from "@/components/icons/SignOut";
 import Home from "@/components/icons/Home";
 import Search from "@/components/icons/Search";
+import { signOut } from "next-auth/react";
+import { success } from "@/utils/feedback";
+import LoginModalForm from "@/components/Login/LoginModalForm";
 
 type Props = {
   children: React.ReactNode;
@@ -20,18 +23,21 @@ export default function InAppLayout({ children }: Props) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const user = useUser();
-
-  useEffect(() => {
-    if (!user)
-      router.push("/?redirected=true", {
-        as: "/"
-      });
-  }, [user, router]);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const handleClose = () => {
     setOpen(false);
     document.body.style.overflow = "auto";
   };
+
+  const handleUserIconClick = () => {
+    if (user) {
+      router.push(`/profile/${user?.username}`);
+      return;
+    }
+    setShowLoginModal(true);
+  };
+
   return (
     <div className="z-10">
       <Transition
@@ -86,8 +92,8 @@ export default function InAppLayout({ children }: Props) {
                     variant="menu"
                     label="Logout"
                     onClick={() => {
-                      alert("Not implemented");
-                      //deleteCookie("currentUser");
+                      signOut();
+                      success("Logged out successfully");
                     }}
                     leftIcon={<SignOut />}
                   />
@@ -97,7 +103,10 @@ export default function InAppLayout({ children }: Props) {
           </div>
         </>
       </Transition>
-
+      <LoginModalForm
+        onClose={() => setShowLoginModal(false)}
+        open={showLoginModal}
+      />
       <div className="bg-secondary-black p-3">
         <div className="flex flex-row justify-between items-center max-w-7xl m-auto">
           <div
@@ -112,7 +121,7 @@ export default function InAppLayout({ children }: Props) {
           </div>
           <div
             className="flex flex-row gap-3 cursor-pointer"
-            onClick={() => router.push(`/profile/${user?.username}`)}
+            onClick={handleUserIconClick}
           >
             <User />
             <span className="text-white hidden md:block">{user?.username}</span>

@@ -1,6 +1,5 @@
-import axios from "axios";
+import axios, { HttpStatusCode } from "axios";
 import * as feedback from "../../utils/feedback";
-import { deleteCookie } from "cookies-next";
 
 import {
   QueryCache,
@@ -8,6 +7,7 @@ import {
   MutationMeta,
   MutationCache
 } from "@tanstack/react-query";
+import { signOut } from "next-auth/react";
 
 export function createQueryClient() {
   return new QueryClient({
@@ -43,12 +43,12 @@ function handleError(error: Error, meta?: MutationMeta) {
     return feedbackErrorFn(`An error occured: ${error.message}`);
   }
   const errorCode = error.response?.status;
-  if (error.response?.status === 401) {
+  if (error.response?.status === HttpStatusCode.Unauthorized) {
     const errorMessage = meta?.errorMessages?.[errorCode as number];
     if (errorMessage) {
       feedbackErrorFn(errorMessage ?? "Please, login again");
     }
-    deleteCookie("currentUser");
+    signOut();
   }
 
   if (error.response && !meta?.skipError) {

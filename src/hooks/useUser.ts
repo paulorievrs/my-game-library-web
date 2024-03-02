@@ -1,7 +1,6 @@
-import { User } from "@/@types/user";
-import { getCookie } from "cookies-next";
+import { useSession } from "next-auth/react";
 
-export function useUser(): User | null {
-  const currentUser = getCookie("currentUser");
-  return currentUser ? JSON.parse(currentUser) : null;
+export function useUser() {
+  const session = useSession();
+  return session?.data?.user || null;
 }

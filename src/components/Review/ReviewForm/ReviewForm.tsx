@@ -38,7 +38,10 @@ export default function ReviewForm({ gameReview }: Props) {
       gave_up: gameReview?.gave_up ?? false,
       rating: gameReview?.rating ?? 0,
       review: gameReview?.review ?? "",
-      game: gameReview?.game as any
+      game: gameReview?.game as {
+        id: number;
+        name: string;
+      }
     }
   });
   const createGameReview = useCreateGameReview();
@@ -55,7 +58,9 @@ export default function ReviewForm({ gameReview }: Props) {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-white">New Review</h1>
+      <h1 className="text-3xl font-bold text-white">
+        {gameReview?.id ? "Update" : "New"} Review
+      </h1>
       <form
         className="flex flex-col gap-5 mt-10"
         onSubmit={handleSubmit(onSubmit)}

@@ -71,3 +71,7 @@ export const createGameReview = (data: GameReviewType) => {
   };
   return api.post<GameReviewType>("/game-review", payload);
 };
+
+export const getReview = (id: string) => {
+  return api.get<GameReview>(`/game-review/${id}`);
+};

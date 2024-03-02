@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Mukta, Rubik } from "next/font/google";
+
 import "./globals.css";
 import clsx from "clsx";
 
@@ -7,13 +7,15 @@ import ClientLayout from "../layouts/client-layout";
 import ProviderLayout from "../layouts/provider-layout";
 import { Toaster } from "react-hot-toast";
 import { rubik } from "@/layouts/fonts";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/config";
 
 export const metadata: Metadata = {
   title: "My Game Library",
   description: "A simple game library that you can use to manage your games."
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children
 }: {
   children: React.ReactNode;
